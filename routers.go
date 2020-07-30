@@ -6,8 +6,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/gofiber/utils"
+	"github.com/valyala/fasthttp"
 	"io"
+	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"regexp"
@@ -32,6 +36,7 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/go-zoo/bone"
 	"github.com/gocraft/web"
+	"github.com/gofiber/fiber"
 	"github.com/gorilla/mux"
 	gowwwrouter "github.com/gowww/router"
 	"github.com/julienschmidt/httprouter"
@@ -568,6 +573,83 @@ func loadGinSingle(method, path string, handle gin.HandlerFunc) http.Handler {
 	router := gin.New()
 	router.Handle(method, path, handle)
 	return router
+}
+
+// fiber
+func fiberHandle(_ *fiber.Ctx) {}
+
+func fiberHandleWrite(c *fiber.Ctx) {
+	io.WriteString(c.Fasthttp, c.Params("name"))
+}
+
+func fiberHandleTest(c *fiber.Ctx) {
+	io.WriteString(c.Fasthttp, c.OriginalURL())
+}
+
+func loadFiberSingle(method, path string, handle fiber.Handler) http.Handler {
+	router := fiber.New()
+	router.Add(method, path, handle)
+	return fiberHandlerFunc(router)
+}
+
+func loadFiber(routes []route) http.Handler {
+	h := fiberHandle
+	if loadTestHandler {
+		h = fiberHandleTest
+	}
+
+	router := fiber.New()
+	for _, route := range routes {
+		router.Add(route.method, route.path, h)
+	}
+	return fiberHandlerFunc(router)
+}
+
+// fiberHandlerFunc wraps fiber handler to net/http handler func
+func fiberHandlerFunc(app *fiber.App) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// New fasthttp request
+		req := fasthttp.AcquireRequest()
+		defer fasthttp.ReleaseRequest(req)
+		// Convert net/http -> fasthttp request
+		if r.Body != nil {
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, utils.StatusMessage(fiber.StatusInternalServerError), fiber.StatusInternalServerError)
+				return
+			}
+			req.Header.SetContentLength(len(body))
+			_, _ = req.BodyWriter().Write(body)
+		}
+
+		req.Header.SetMethod(r.Method)
+		req.SetRequestURI(r.RequestURI)
+		req.SetHost(r.Host)
+		for key, val := range r.Header {
+			for _, v := range val {
+				req.Header.Add(key, v)
+			}
+		}
+		remoteAddr, err := net.ResolveTCPAddr("tcp", r.RemoteAddr)
+		if err != nil {
+			http.Error(w, utils.StatusMessage(fiber.StatusInternalServerError), fiber.StatusInternalServerError)
+			return
+		}
+
+		// New fasthttp Ctx
+		var fctx fasthttp.RequestCtx
+		fctx.Init(req, remoteAddr, nil)
+
+		// Execute fiber Handler
+		app.Handler()(&fctx)
+
+		// Convert fasthttp Ctx > net/http
+		fctx.Response.Header.VisitAll(func(k, v []byte) {
+			w.Header().Set(string(k), string(v))
+		})
+		w.WriteHeader(fctx.Response.StatusCode())
+		_, _ = w.Write(fctx.Response.Body())
+	}
 }
 
 // gocraft/web

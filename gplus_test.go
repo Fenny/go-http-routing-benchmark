@@ -46,6 +46,7 @@ var (
 	gplusDenco           http.Handler
 	gplusEcho            http.Handler
 	gplusGin             http.Handler
+	gplusFiber           http.Handler
 	gplusGocraftWeb      http.Handler
 	gplusGoji            http.Handler
 	gplusGojiv2          http.Handler
@@ -103,6 +104,9 @@ func init() {
 	})
 	calcMem("Gin", func() {
 		gplusGin = loadGin(gplusAPI)
+	})
+	calcMem("Fiber", func() {
+		gplusFiber = loadFiber(gplusAPI)
 	})
 	calcMem("GocraftWeb", func() {
 		gplusGocraftWeb = loadGocraftWeb(gplusAPI)
@@ -217,6 +221,10 @@ func BenchmarkEcho_GPlusStatic(b *testing.B) {
 func BenchmarkGin_GPlusStatic(b *testing.B) {
 	req, _ := http.NewRequest("GET", "/people", nil)
 	benchRequest(b, gplusGin, req)
+}
+func BenchmarkFiber_GPlusStatic(b *testing.B) {
+	req, _ := http.NewRequest("GET", "/people", nil)
+	benchRequest(b, gplusFiber, req)
 }
 func BenchmarkGocraftWeb_GPlusStatic(b *testing.B) {
 	req, _ := http.NewRequest("GET", "/people", nil)
@@ -354,6 +362,10 @@ func BenchmarkGin_GPlusParam(b *testing.B) {
 	req, _ := http.NewRequest("GET", "/people/118051310819094153327", nil)
 	benchRequest(b, gplusGin, req)
 }
+func BenchmarkFiber_GPlusParam(b *testing.B) {
+	req, _ := http.NewRequest("GET", "/people/118051310819094153327", nil)
+	benchRequest(b, gplusFiber, req)
+}
 func BenchmarkGocraftWeb_GPlusParam(b *testing.B) {
 	req, _ := http.NewRequest("GET", "/people/118051310819094153327", nil)
 	benchRequest(b, gplusGocraftWeb, req)
@@ -490,6 +502,10 @@ func BenchmarkGin_GPlus2Params(b *testing.B) {
 	req, _ := http.NewRequest("GET", "/people/118051310819094153327/activities/123456789", nil)
 	benchRequest(b, gplusGin, req)
 }
+func BenchmarkFiber_GPlus2Params(b *testing.B) {
+	req, _ := http.NewRequest("GET", "/people/118051310819094153327/activities/123456789", nil)
+	benchRequest(b, gplusFiber, req)
+}
 func BenchmarkGocraftWeb_GPlus2Params(b *testing.B) {
 	req, _ := http.NewRequest("GET", "/people/118051310819094153327/activities/123456789", nil)
 	benchRequest(b, gplusGocraftWeb, req)
@@ -615,6 +631,9 @@ func BenchmarkEcho_GPlusAll(b *testing.B) {
 }
 func BenchmarkGin_GPlusAll(b *testing.B) {
 	benchRoutes(b, gplusGin, gplusAPI)
+}
+func BenchmarkFiber_GPlusAll(b *testing.B) {
+	benchRoutes(b, gplusFiber, gplusAPI)
 }
 func BenchmarkGocraftWeb_GPlusAll(b *testing.B) {
 	benchRoutes(b, gplusGocraftWeb, gplusAPI)

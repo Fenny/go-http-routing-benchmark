@@ -19,6 +19,8 @@ require (
 	github.com/go-playground/lars v4.0.1+incompatible
 	github.com/go-zoo/bone v1.3.0
 	github.com/gocraft/web v0.0.0-20190207150652-9707327fb69b
+	github.com/gofiber/fiber v1.13.3
+	github.com/gofiber/utils v0.0.9
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
@@ -51,12 +53,12 @@ require (
 	github.com/typepress/rivet v1.1.1-0.20151208095308-d62b4fcaf6b9
 	github.com/unknwon/com v1.0.1 // indirect
 	github.com/ursiform/bear v1.0.1
+	github.com/valyala/fasthttp v1.15.1
 	github.com/vanng822/r2router v0.0.0-20150523112421-1023140a4f30
 	github.com/vulcand/predicate v1.1.0 // indirect
 	github.com/zenazn/goji v0.9.0
 	goji.io v2.0.2+incompatible
 	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad // indirect
-	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/ini.v1 v1.48.0 // indirect
 	gopkg.in/macaron.v1 v1.3.4
