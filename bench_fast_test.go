@@ -17,18 +17,20 @@ func benchFastRequest(b *testing.B, handler fasthttp.RequestHandler, ctx *fastht
 }
 
 func benchFastRoutes(b *testing.B, handler fasthttp.RequestHandler, routes []route) {
+	ctx := acquireFastCtx("GET", "/")
 	b.ReportAllocs()
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		for _, route := range routes {
-			ctx := acquireFastCtx("GET", "/")
+			ctx.Request.Reset()
+			ctx.Response.Reset()
 			ctx.Request.Header.SetMethod(route.method)
 			ctx.Request.Header.SetRequestURI(route.path)
 			handler(ctx)
-			releaseFastCtx(ctx)
 		}
 	}
+	releaseFastCtx(ctx)
 }
 
 var fastCtxPool = sync.Pool{New: func() interface{} {

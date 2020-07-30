@@ -17,7 +17,10 @@ func fiberHandleTest(c *fiber.Ctx) {
 }
 
 func loadFiberSingle(method, path string, handle fiber.Handler) fasthttp.RequestHandler {
-	router := fiber.New()
+	router := fiber.New(&fiber.Settings{
+		CaseSensitive: true,
+		StrictRouting: true,
+	})
 	router.Add(method, path, handle)
 	return router.Handler()
 }
@@ -28,7 +31,10 @@ func loadFiber(routes []route) fasthttp.RequestHandler {
 		h = fiberHandleTest
 	}
 
-	router := fiber.New()
+	router := fiber.New(&fiber.Settings{
+		CaseSensitive: true,
+		StrictRouting: true,
+	})
 	for _, route := range routes {
 		router.Add(route.method, route.path, h)
 	}

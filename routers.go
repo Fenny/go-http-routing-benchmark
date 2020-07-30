@@ -87,6 +87,7 @@ var nullLogger *log.Logger
 // flag indicating if the normal or the test handler should be loaded
 var loadTestHandler = false
 
+// flag indicating if the normal or the test fast handler should be loaded
 var loadTestFastHandler = false
 
 func init() {

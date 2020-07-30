@@ -109,9 +109,10 @@ func TestFastRouters(t *testing.T) {
 			handler := router.load(api.routes)
 
 			for _, route := range api.routes {
+				ctx.Request.Reset()
+				ctx.Response.Reset()
 				ctx.Request.Header.SetMethod(route.method)
 				ctx.Request.Header.SetRequestURI(route.path)
-				ctx.Response.Reset()
 				handler(ctx)
 				code, body := ctx.Response.StatusCode(), ctx.Response.Body()
 				if code != 200 || string(body) != route.path {
