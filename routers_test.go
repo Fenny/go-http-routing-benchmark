@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/valyala/fasthttp"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +23,6 @@ var (
 		{"Denco", loadDenco},
 		{"Echo", loadEcho},
 		{"Gin", loadGin},
-		{"Fiber", loadFiber},
 		{"GocraftWeb", loadGocraftWeb},
 		{"Goji", loadGoji},
 		{"Gojiv2", loadGojiv2},
@@ -46,6 +46,14 @@ var (
 		{"Traffic", loadTraffic},
 		{"Vulcan", loadVulcan},
 		// {"Zeus", loadZeus},
+	}
+
+	// load functions of all fast Routers
+	fastRouters = []struct {
+		name string
+		load func(routes []route) fasthttp.RequestHandler
+	}{
+		{"Fiber", loadFiber},
 	}
 
 	// all APIs
@@ -89,4 +97,32 @@ func TestRouters(t *testing.T) {
 	}
 
 	loadTestHandler = false
+}
+
+func TestFastRouters(t *testing.T) {
+	loadTestFastHandler = true
+	for _, router := range fastRouters {
+
+		ctx := acquireFastCtx("GET", "/")
+
+		for _, api := range apis {
+			handler := router.load(api.routes)
+
+			for _, route := range api.routes {
+				ctx.Request.Header.SetMethod(route.method)
+				ctx.Request.Header.SetRequestURI(route.path)
+				ctx.Response.Reset()
+				handler(ctx)
+				code, body := ctx.Response.StatusCode(), ctx.Response.Body()
+				if code != 200 || string(body) != route.path {
+					t.Errorf(
+						"%s in API %s: %d - %s; expected %s %s\n",
+						router.name, api.name, code, string(body), route.method, route.path,
+					)
+				}
+			}
+		}
+	}
+
+	loadTestFastHandler = false
 }
