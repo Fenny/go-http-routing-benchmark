@@ -7,6 +7,7 @@ require (
 	github.com/ant0ine/go-json-rest v3.3.2+incompatible
 	github.com/astaxie/beego v1.12.0
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40
+	github.com/buaazp/fasthttprouter v0.1.1
 	github.com/cloudykit/router v0.0.0-20170501012743-15c4ed71df81
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/dimfeld/httptreemux v5.0.1+incompatible
@@ -20,7 +21,6 @@ require (
 	github.com/go-zoo/bone v1.3.0
 	github.com/gocraft/web v0.0.0-20190207150652-9707327fb69b
 	github.com/gofiber/fiber v1.13.3
-	github.com/gofiber/utils v0.0.9
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
