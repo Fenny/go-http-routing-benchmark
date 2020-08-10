@@ -2,6 +2,8 @@ module github.com/julienschmidt/go-http-routing-benchmark
 
 go 1.13
 
+replace github.com/gofiber/fiber => ../fiber
+
 require (
 	github.com/aerogo/aero v1.3.42
 	github.com/ant0ine/go-json-rest v3.3.2+incompatible
